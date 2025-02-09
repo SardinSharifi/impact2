@@ -1,5 +1,4 @@
-// src/journal/journal.controller.ts
-import { Controller, Get, Post, Body, Param, Put, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, Put, Delete, NotFoundException } from '@nestjs/common';
 import { JournalService } from './journal.service';
 import { Journal } from './journal.entity';
 
@@ -8,12 +7,12 @@ export class JournalController {
   constructor(private readonly journalService: JournalService) {}
 
   @Post()
-  create(@Body() body: { title: string; description: string; author?: string }): Promise<Journal> {
-    return this.journalService.createJournal(body.title, body.description, body.author);
+  async create(@Body() body: { title: string; description: string; issn: string; lists?: number[] }): Promise<Journal> {
+    return this.journalService.create(body.title, body.description, body.issn, body.lists || []);
   }
 
   @Get()
-  findAll(): Promise<Journal[]> {
+  async findAll(): Promise<Journal[]> {
     return this.journalService.findAll();
   }
 
@@ -21,15 +20,20 @@ export class JournalController {
   async findOne(@Param('id') id: string): Promise<Journal> {
     const journal = await this.journalService.findOne(Number(id));
     if (!journal) {
-      throw new Error('Journal not found');
+      throw new NotFoundException('Journal not found');
     }
     return journal;
+  }
+
+  @Get('search/issn/:issn')
+  async searchByIssn(@Param('issn') issn: string): Promise<Journal | null> {
+    return this.journalService.findByIssn(issn);
   }
 
   @Put(':id')
   async update(
     @Param('id') id: string,
-    @Body() body: { title: string; description: string; author?: string }
+    @Body() body: { title: string; description: string; author?: string; issn?: string }
   ): Promise<Journal> {
     return this.journalService.update(Number(id), body);
   }

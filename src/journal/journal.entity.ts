@@ -1,5 +1,5 @@
-import { Entity, PrimaryGeneratedColumn, Column, ManyToMany } from 'typeorm';
-import { List } from '../list/list.entity'; // وارد کردن entity مربوط به لیست‌ها
+import { Entity, PrimaryGeneratedColumn, Column, ManyToMany, JoinTable } from 'typeorm';
+import { List } from '../list/list.entity'; // Importing List entity
 
 @Entity()
 export class Journal {
@@ -7,14 +7,20 @@ export class Journal {
   id: number;
 
   @Column()
-  title: string;
+  title: string; // Add the missing 'title' field
 
   @Column()
-  description: string;
+  description: string; // Add the missing 'description' field
 
-  @Column({ nullable: true })
-  author?: string; // فیلد author که اختیاری است
+  @Column()
+  author: string; // Add the missing 'author' field
 
+  @Column()
+  issn: string; // ISSN for the journal
+
+  // Many-to-Many relationship with List entity (blacklists, indexes)
   @ManyToMany(() => List, (list) => list.journals)
-  lists: List[]; // ارتباط Many-to-Many با لیست‌ها
+  @JoinTable() // Creates a join table for the Many-to-Many relationship
+  lists: List[];
 }
+

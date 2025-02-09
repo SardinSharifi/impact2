@@ -2,64 +2,54 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Journal } from './journal.entity';
-import { List } from '../list/list.entity'; // وارد کردن List
 
 @Injectable()
 export class JournalService {
   constructor(
     @InjectRepository(Journal)
-    private journalRepository: Repository<Journal>, // دسترسی به ریپازیتوری مجله
-    @InjectRepository(List)
-    private listRepository: Repository<List>,  // دسترسی به ریپازیتوری لیست
+    private journalRepository: Repository<Journal>,
   ) {}
 
-  // ایجاد مجله جدید
-  async createJournal(title: string, description: string, author?: string, listIds: number[] = []): Promise<Journal> {
-    const journal = this.journalRepository.create({ title, description, author });
-
-    // ارتباط با لیست‌ها در صورت ارسال
+  // Create a new journal
+  async create(title: string, description: string, issn: string, listIds: number[] = []): Promise<Journal> {
+    const journal = this.journalRepository.create({ title, description, issn });
     if (listIds.length > 0) {
-      const lists = await this.listRepository.findByIds(listIds);
-      journal.lists = lists; // اضافه کردن لیست‌ها به مجله
+      // Handle the relationship here
     }
-
-    return this.journalRepository.save(journal); // ذخیره مجله در پایگاه داده
+    return this.journalRepository.save(journal);
   }
 
-  // دریافت همه مجله‌ها
+  // Fetch all journals
   async findAll(): Promise<Journal[]> {
-    return this.journalRepository.find({ relations: ['lists'] }); // بارگذاری ارتباطات لیست‌ها
+    return this.journalRepository.find();
   }
 
-  // پیدا کردن مجله بر اساس id
+  // Fetch a journal by ID
   async findOne(id: number): Promise<Journal | null> {
-    return this.journalRepository.findOne({ where: { id }, relations: ['lists'] });
+    return this.journalRepository.findOne({ where: { id } });
   }
 
-  // بروزرسانی مجله
-  async update(id: number, body: { title: string; description: string; author?: string; listIds?: number[] }): Promise<Journal> {
-    const journal = await this.journalRepository.findOne({ where: { id }, relations: ['lists'] });
-    
+  // Search journal by ISSN
+  async findByIssn(issn: string): Promise<Journal | null> {
+    return this.journalRepository.findOne({ where: { issn } });
+  }
+
+  // Update a journal by ID
+  async update(id: number, body: { title: string; description: string; author?: string; issn?: string }): Promise<Journal> {
+    const journal = await this.journalRepository.findOne({ where: { id } });
     if (!journal) {
       throw new Error('Journal not found');
     }
 
     journal.title = body.title;
     journal.description = body.description;
-    if (body.author) {
-      journal.author = body.author;
-    }
-
-    // بروزرسانی ارتباطات با لیست‌ها
-    if (body.listIds) {
-      const lists = await this.listRepository.findByIds(body.listIds);
-      journal.lists = lists; // بروزرسانی لیست‌ها
-    }
+    journal.author = body.author || ''; // Ensure default value for optional fields
+    journal.issn = body.issn || ''; // Ensure default value for optional fields
 
     return this.journalRepository.save(journal);
   }
 
-  // حذف مجله
+  // Remove a journal by ID
   async remove(id: number): Promise<void> {
     const journal = await this.findOne(id);
     if (!journal) {

@@ -1,71 +1,61 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository, In } from 'typeorm'; // وارد کردن In از typeorm
-import { List } from './list.entity'; // وارد کردن List entity
-import { Journal } from '../journal/journal.entity'; // وارد کردن Journal entity
+import { Repository, In } from 'typeorm';  // Added 'In' import here
+import { List } from './list.entity';
+import { Journal } from '../journal/journal.entity';  // Ensure Journal is correctly imported
 
 @Injectable()
 export class ListService {
   constructor(
     @InjectRepository(List)
-    private listRepository: Repository<List>, // دسترسی به لیست‌ها
-    @InjectRepository(Journal)
-    private journalRepository: Repository<Journal>, // دسترسی به مجلات
+    private readonly listRepository: Repository<List>,
   ) {}
 
-  // ایجاد لیست جدید
-  async createList(name: string, type: string, journalIds: number[] = []): Promise<List> {
-    const list = this.listRepository.create({ name, type });
+  // Create a new list
+  async create(name: string, type: string, journalIds: number[]): Promise<List> {
+    const list = this.listRepository.create({ name, type, journals: [] });
 
-    // اگر آی‌دی‌های مجلات ارسال شد، ارتباط‌ها را نیز اضافه کنید
-    if (journalIds.length > 0) {
-      const journals = await this.journalRepository.find({
-        where: { id: In(journalIds) }, // استفاده از In برای یافتن مجلات بر اساس آی‌دی
-      });
-      list.journals = journals;
-    }
-
-    return this.listRepository.save(list); // ذخیره لیست در پایگاه داده
+    // Find journals by their IDs using the correct method
+    const journals = await this.listRepository.manager.getRepository(Journal).find({
+      where: { id: In(journalIds) }, // Ensure you import 'In' from 'typeorm'
+    });
+    
+    list.journals = journals; // Assign the journals to the list
+    return await this.listRepository.save(list);
   }
 
-  // دریافت همه لیست‌ها
+  // Get all lists
   async findAll(): Promise<List[]> {
-    return this.listRepository.find({ relations: ['journals'] }); // بارگذاری ارتباطات مجلات
+    return this.listRepository.find({ relations: ['journals'] });  // Including related journals
   }
 
-  // پیدا کردن لیست با id
-  async findOne(id: number): Promise<List | null> {
-    return this.listRepository.findOne({ where: { id }, relations: ['journals'] });
-  }
-
-  // بروزرسانی لیست
-  async update(id: number, body: { name: string; type: string; journalIds?: number[] }): Promise<List> {
+  // Get a list by its ID
+  async findOne(id: number): Promise<List> {
     const list = await this.listRepository.findOne({ where: { id }, relations: ['journals'] });
-
     if (!list) {
-      throw new Error('List not found');
+      throw new NotFoundException('List not found');
     }
-
-    list.name = body.name;
-    list.type = body.type;
-
-    // بروزرسانی ارتباطات با مجلات
-    if (body.journalIds) {
-      const journals = await this.journalRepository.find({
-        where: { id: In(body.journalIds) }, // استفاده از In برای یافتن مجلات بر اساس آی‌دی
-      });
-      list.journals = journals;
-    }
-
-    return this.listRepository.save(list); // ذخیره لیست
+    return list;  // Return list directly as 'List' is already ensured
   }
 
-  // حذف لیست
-  async remove(id: number): Promise<void> {
-    const list = await this.findOne(id);
+  // Update a list by its ID
+  async update(id: number, updateData: Partial<List>): Promise<List> {
+    const list = await this.listRepository.findOne({ where: { id }, relations: ['journals'] });
     if (!list) {
-      throw new Error('List not found');
+      throw new NotFoundException('List not found');
     }
-    await this.listRepository.remove(list); // حذف لیست
+
+    await this.listRepository.update(id, updateData);  // Update the list
+    const updatedList = await this.listRepository.findOne({ where: { id }, relations: ['journals'] });
+    if (!updatedList) {
+      throw new NotFoundException('List not found after update');
+    }
+    return updatedList;  // Return the updated list
+  }
+
+  // Remove a list by its ID
+  async remove(id: number): Promise<void> {
+    const list = await this.findOne(id);  // Using findOne to ensure the list exists
+    await this.listRepository.remove(list);  // Remove the list
   }
 }
