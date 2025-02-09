@@ -1,4 +1,4 @@
-import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column } from 'typeorm';
 
 @Entity()
 export class Journal {
@@ -6,17 +6,11 @@ export class Journal {
   id: number;
 
   @Column()
-  title: string;  // عنوان مقاله یا ژورنال
+  title: string;
 
   @Column()
-  description: string;  // توضیحات یا خلاصه مقاله
-
-  @CreateDateColumn()
-  createdAt: Date;  // تاریخ ایجاد مقاله
-
-  @Column({ default: true })
-  isActive: boolean;  // وضعیت فعال بودن ژورنال (مقاله)
+  description: string;
 
   @Column({ nullable: true })
-  author: string;  // نویسنده مقاله (اختیاری)
+  author?: string;
 }
