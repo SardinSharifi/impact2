@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="fa">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>جستجوی مجلات - ImpactFactor.ir</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <header>
+        <h1>سامانه اعتبارسنجی مجلات علمی</h1>
+    </header>
+    <main>
+        <section class="search-section">
+            <h2>جستجوی مجله</h2>
+            <form id="search-form">
+                <label for="search-input">عنوان مجله یا ISSN:</label>
+                <input type="text" id="search-input" name="query" required placeholder="عنوان یا ISSN را وارد کنید...">
+                <button type="submit">جستجو</button>
+            </form>
+        </section>
+        <section id="results-section" class="hidden">
+            <h2>نتایج جستجو</h2>
+            <ul id="results-list"></ul>
+        </section>
+    </main>
+    <footer>
+        <p>&copy; 2025 ImpactFactor.ir</p>
+    </footer>
+    <script src="script.js"></script>
+</body>
+</html>
+
+
