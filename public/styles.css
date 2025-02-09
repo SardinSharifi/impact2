@@ -1,138 +1,131 @@
-/* تنظیمات اصلی صفحه */
+
 body {
-                      font-family: 'Arial', sans-serif;
-                      direction: rtl;
-                      text-align: right;
-                      background: linear-gradient(to right, rgba(52, 152, 219, 0.6), rgba(46, 204, 113, 0.6)); /* آبی و سبز شیشه‌ای */
-                      margin: 0;
-                      padding: 0;
-                  }
-                  
-                  /* هدر */
-                  header {
-                      background-color: rgba(231, 76, 60, 0.8); /* قرمز شیشه‌ای */
-                      color: white;
-                      padding: 2em 0;
-                      text-align: center;
-                      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-                      margin-bottom: 2em;
-                  }
-                  
-                  header h1 {
-                      font-size: 2.5em;
-                      letter-spacing: 2px;
-                  }
-                  
-                  /* بخش اصلی */
-                  main {
-                      padding: 3em 2em;
-                      display: flex;
-                      justify-content: center;
-                      flex-direction: column;
-                      align-items: center;
-                  }
-                  
-                  /* بخش جستجو */
-                  .search-section {
-                      background: rgba(255, 255, 255, 0.9); /* پس‌زمینه کمی شفاف */
-                      padding: 2em 3em;
-                      border-radius: 10px;
-                      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-                      width: 100%;
-                      max-width: 500px;
-                      text-align: center;
-                      background-color: rgba(248, 243, 237, 0.85); /* یاسی شفاف */
-                  }
-                  
-                  .search-section h2 {
-                      font-size: 2em;
-                      color: #333;
-                      margin-bottom: 1em;
-                  }
-                  
-                  label {
-                      font-size: 1.1em;
-                      margin-bottom: 0.5em;
-                      display: block;
-                      color: #555;
-                  }
-                  
-                  input[type="text"] {
-                      width: 100%;
-                      padding: 1em;
-                      font-size: 1.1em;
-                      border-radius: 8px;
-                      border: 1px solid #ddd;
-                      margin-bottom: 1em;
-                      box-sizing: border-box;
-                      transition: all 0.3s ease;
-                  }
-                  
-                  input[type="text"]:focus {
-                      outline: none;
-                      border: 1px solid #3498db;
-                      box-shadow: 0 0 8px rgba(52, 152, 219, 0.6);
-                  }
-                  
-                  button {
-                      background-color: #e74c3c; /* قرمز */
-                      color: white;
-                      border: none;
-                      padding: 1em 2em;
-                      font-size: 1.2em;
-                      cursor: pointer;
-                      border-radius: 8px;
-                      transition: background-color 0.3s ease;
-                  }
-                  
-                  button:hover {
-                      background-color: #c0392b; /* قرمز تیره */
-                  }
-                  
-                  /* بخش نتایج جستجو */
-                  .results-section {
-                      margin-top: 3em;
-                      width: 100%;
-                      max-width: 500px;
-                      text-align: center;
-                  }
-                  
-                  #results-list {
-                      list-style: none;
-                      padding: 0;
-                  }
-                  
-                  #results-list li {
-                      margin: 1em 0;
-                      padding: 1em;
-                      background-color: rgba(231, 76, 60, 0.1); /* قرمز شفاف */
-                      border-radius: 8px;
-                      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-                  }
-                  
-                  #results-list li a {
-                      text-decoration: none;
-                      color: #3498db;
-                      font-size: 1.1em;
-                  }
-                  
-                  #results-list li a:hover {
-                      text-decoration: underline;
-                  }
-                  
-                  /* استایل‌های پنهان */
-                  .hidden {
-                      display: none;
-                  }
-                  
-                  /* فوتر */
-                  footer {
-                      background-color: rgba(231, 76, 60, 0.8); /* قرمز شیشه‌ای */
-                      color: white;
-                      text-align: center;
-                      padding: 1em;
-                      position: fixed;
-                      bottom: 0;
-                      width: 100%;
-                  }
-                  
+    font-family: 'Arial', sans-serif;
+    direction: rtl;
+    text-align: right;
+    background: linear-gradient(to right, #D7B899, #A67B5B); /* نسکافه‌ای شیری و موکا روشن */
+    margin: 0;
+    padding: 0;
+}
+
+header {
+    background-color: rgba(107, 67, 44, 0.8); /* موکا تیره */
+    color: white;
+    padding: 2em 0;
+    text-align: center;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    margin-bottom: 2em;
+}
+
+header h1 {
+    font-size: 2.5em;
+    letter-spacing: 2px;
+}
+
+main {
+    padding: 3em 2em;
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+    align-items: center;
+}
+.search-section {
+    background: rgba(255, 255, 255, 0.9);
+    padding: 2em 3em;
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    width: 100%;
+    max-width: 500px;
+    text-align: center;
+    background-color: rgba(215, 184, 153, 0.85); /* نسکافه‌ای شیری */
+}
+
+.search-section h2 {
+    font-size: 2em;
+    color: #4A2C22;
+    margin-bottom: 1em;
+}
+
+label {
+    font-size: 1.1em;
+    margin-bottom: 0.5em;
+    display: block;
+    color: #5E3B2E;
+}
+
+input[type="text"] {
+    width: 100%;
+    padding: 1em;
+    font-size: 1.1em;
+    border-radius: 8px;
+    border: 1px solid #8D6E63;
+    margin-bottom: 1em;
+    box-sizing: border-box;
+    transition: all 0.3s ease;
+}
+
+input[type="text"]:focus {
+    outline: none;
+    border: 1px solid #6D4C41;
+    box-shadow: 0 0 8px rgba(109, 76, 65, 0.6);
+}
+
+button {
+    background-color: #6D4C41; /* موکا تیره */
+    color: white;
+    border: none;
+    padding: 1em 2em;
+    font-size: 1.2em;
+    cursor: pointer;
+    border-radius: 8px;
+    transition: background-color 0.3s ease;
+}
+
+button:hover {
+    background-color: #5E3B2E; /* موکا تیره‌تر */
+}
+
+.results-section {
+    margin-top: 3em;
+    width: 100%;
+    max-width: 500px;
+    text-align: center;
+}
+
+#results-list {
+    list-style: none;
+    padding: 0;
+}
+
+#results-list li {
+    margin: 1em 0;
+    padding: 1em;
+    background-color: rgba(107, 67, 44, 0.1); /* موکا تیره شفاف */
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+#results-list li a {
+    text-decoration: none;
+    color: #6D4C41;
+    font-size: 1.1em;
+}
+
+#results-list li a:hover {
+    text-decoration: underline;
+}
+
+.hidden {
+    display: none;
+}
+
+
+footer {
+    background-color: rgba(107, 67, 44, 0.8); 
+    color: white;
+    text-align: center;
+    padding: 1em;
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+}
