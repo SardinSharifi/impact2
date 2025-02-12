@@ -25,6 +25,7 @@ import { ConfigModule } from '@nestjs/config'; // To use .env files for environm
       logging: true,
       migrations: ['src/migrations/*.ts'], // Specify path for migrations
     }),
+    TypeOrmModule.forFeature([Journal,User,List]),
     UserModule,  // Import UserModule
     JournalModule,  // Import JournalModule
     ListModule,  // Import ListModule
