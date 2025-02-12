@@ -6,16 +6,19 @@ import { Journal } from './journal.entity';
 export class JournalController {
   constructor(private readonly journalService: JournalService) {}
 
+  // Create a new journal
   @Post()
   async create(@Body() body: { title: string; description: string; issn: string; lists?: number[] }): Promise<Journal> {
     return this.journalService.create(body.title, body.description, body.issn, body.lists || []);
   }
 
+  // Get all journals
   @Get()
   async findAll(): Promise<Journal[]> {
     return this.journalService.findAll();
   }
 
+  // Get a journal by its ID
   @Get(':id')
   async findOne(@Param('id') id: string): Promise<Journal> {
     const journal = await this.journalService.findOne(Number(id));
@@ -25,11 +28,17 @@ export class JournalController {
     return journal;
   }
 
+  // Search journal by ISSN
   @Get('search/issn/:issn')
   async searchByIssn(@Param('issn') issn: string): Promise<Journal | null> {
-    return this.journalService.findByIssn(issn);
+    const journal = await this.journalService.findByIssn(issn);
+    if (!journal) {
+      throw new NotFoundException('Journal not found');
+    }
+    return journal;
   }
 
+  // Update a journal by its ID
   @Put(':id')
   async update(
     @Param('id') id: string,
@@ -38,6 +47,7 @@ export class JournalController {
     return this.journalService.update(Number(id), body);
   }
 
+  // Delete a journal by its ID
   @Delete(':id')
   async remove(@Param('id') id: string): Promise<void> {
     await this.journalService.remove(Number(id));
