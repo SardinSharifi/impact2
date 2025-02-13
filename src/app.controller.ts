@@ -1,11 +1,18 @@
-import { Controller, Get, Render } from '@nestjs/common';
-import { AppService } from './app.service';
+import { Controller, Get, Post, Render, Body } from '@nestjs/common';
+import { ProjectService } from './project/project.service';
 
 @Controller()
 export class AppController {
-  @Get()
-  @Render('home') // اطمینان حاصل کنید که به درستی home.ejs را رندر می‌کند
-  renderHomePage() {
-    return { message: 'Welcome to ifactor.ir' }; // داده‌ای که به ejs ارسال می‌شود
+  constructor(private readonly projectService: ProjectService) {}
+
+  @Get('')
+  @Render('home') 
+  homePage() {
+    return {}; 
+  }
+
+  @Post('/search')
+  async searchJournal(@Body('query') query: string) {
+    return this.projectService.searchJournal(query); // جستجو در سرویس
   }
 }

@@ -13,4 +13,8 @@ export class Journal {
 
   @Column()
   description: string;
+
+  @Column()
+  title: string; 
 }
+

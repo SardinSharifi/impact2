@@ -13,20 +13,36 @@
     <main>
         <section class="search-section">
             <h2>جستجوی مجله</h2>
-            <form id="search-form">
+            <form id="search-form" action="/search" method="POST">
                 <label for="search-input">عنوان مجله یا ISSN:</label>
                 <input type="text" id="search-input" name="query" required placeholder="عنوان یا ISSN را وارد کنید...">
                 <button type="submit">جستجو</button>
             </form>
         </section>
-        <section id="results-section" class="hidden">
+
+        <% if (journal) { %>
+        <section id="results-section">
             <h2>نتایج جستجو</h2>
-            <ul id="results-list"></ul>
+            <p><strong>عنوان:</strong> <%= journal.title %></p>
+            <p><strong>ISSN:</strong> <%= journal.issn %></p>
+            <h3>وضعیت در لیست‌ها:</h3>
+            <ul>
+                <% lists.forEach(list => { %>
+                    <li><%= list.name %></li>
+                <% }) %>
+            </ul>
         </section>
+        <% } %>
+
+        <% if (error) { %>
+        <section id="error-section">
+            <p style="color: red;"><%= error %></p>
+        </section>
+        <% } %>
     </main>
     <footer>
         <p>&copy; 2025 ifactor.ir</p>
     </footer>
-    <script src="script.js"></script>
+    <script src="/script.js"></script>
 </body>
 </html>
