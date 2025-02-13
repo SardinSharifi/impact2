@@ -6,13 +6,14 @@ export class AppController {
   constructor(private readonly projectService: ProjectService) {}
 
   @Get('')
-  @Render('home') 
+  @Render('home')
   homePage() {
     return {}; 
   }
 
   @Post('/search')
   async searchJournal(@Body('query') query: string) {
-    return this.projectService.searchJournal(query); // جستجو در سرویس
+    const result = await this.projectService.searchJournal(query);
+    return { journals: result.journals, lists: result.lists }; // بازگشت هر دو داده
   }
 }

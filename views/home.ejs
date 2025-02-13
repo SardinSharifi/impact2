@@ -5,6 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ifactor.ir</title>
     <link rel="stylesheet" href="/styles.css">
+    
+    </style>">
 </head>
 <body>
     <header>
@@ -20,18 +22,26 @@
             </form>
         </section>
 
-        <% if (journal) { %>
+        <% if (journals && journals.length > 0) { %>
         <section id="results-section">
             <h2>نتایج جستجو</h2>
-            <p><strong>عنوان:</strong> <%= journal.title %></p>
-            <p><strong>ISSN:</strong> <%= journal.issn %></p>
-            <h3>وضعیت در لیست‌ها:</h3>
             <ul>
-                <% lists.forEach(list => { %>
-                    <li><%= list.name %></li>
+                <% journals.forEach(journal => { %>
+                    <li>
+                        <strong>عنوان:</strong> <%= journal.title %><br>
+                        <strong>ISSN:</strong> <%= journal.issn %><br>
+                        <h3>وضعیت در لیست‌ها:</h3>
+                        <ul>
+                            <% journal.lists.forEach(list => { %>
+                                <li><%= list.name %></li>
+                            <% }) %>
+                        </ul>
+                    </li>
                 <% }) %>
             </ul>
         </section>
+        <% } else { %>
+        <p>هیچ نتیجه‌ای یافت نشد.</p>
         <% } %>
 
         <% if (error) { %>

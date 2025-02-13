@@ -1,4 +1,5 @@
-import { Entity, Column, PrimaryGeneratedColumn } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, ManyToMany } from 'typeorm';
+import { List } from './list.entity';
 
 @Entity()
 export class Journal {
@@ -6,15 +7,11 @@ export class Journal {
   id: number;
 
   @Column()
-  name: string;
+  title: string;
 
   @Column()
   issn: string;
 
-  @Column()
-  description: string;
-
-  @Column()
-  title: string; 
+  @ManyToMany(() => List, list => list.journals)
+  lists: List[];
 }
-

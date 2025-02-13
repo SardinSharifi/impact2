@@ -1,4 +1,4 @@
-import { Entity, Column, PrimaryGeneratedColumn, ManyToOne } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, ManyToMany } from 'typeorm';
 import { Journal } from './journal.entity';
 
 @Entity()
@@ -7,8 +7,8 @@ export class List {
   id: number;
 
   @Column()
-  type: string; // blacklist or index
+  name: string;
 
-  @ManyToOne(() => Journal, (journal) => journal.id)
-  journal: Journal;
+  @ManyToMany(() => Journal, journal => journal.lists)
+  journals: Journal[];
 }
