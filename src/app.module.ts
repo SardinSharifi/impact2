@@ -1,19 +1,14 @@
 import { Module } from '@nestjs/common';
-import { TypeOrmModule } from '@nestjs/typeorm';
-import { UserModule } from './user/user.module';
-import { JournalModule } from './journal/journal.module';
-import { ListModule } from './list/list.module';
-import { User } from './user/user.entity';
-import { Journal } from './journal/journal.entity';
-import { List } from './list/list.entity';
 import { ConfigModule } from '@nestjs/config';
-import { join } from 'path';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { ProjectModule } from './project/project.module';  // وارد کردن ماژول پروژه
+import { User } from './project/entities/user.entity';  // اصلاح مسیر موجودیت‌ها
+import { Journal } from './project/entities/journal.entity';  // اصلاح مسیر موجودیت‌ها
+import { List } from './project/entities/list.entity';  // اصلاح مسیر موجودیت‌ها
 
 @Module({
   imports: [
-    ConfigModule.forRoot({
-      isGlobal: true,
-    }),
+    ConfigModule.forRoot(), 
     TypeOrmModule.forRoot({
       type: 'postgres',
       host: process.env.DB_HOST || 'localhost',
@@ -21,15 +16,13 @@ import { join } from 'path';
       username: process.env.DB_USERNAME || 'postgres',
       password: process.env.DB_PASSWORD || '123456',
       database: process.env.DB_NAME || 'journaldb',
-      entities: [User, Journal, List],
+      entities: [User, Journal, List], // وارد کردن موجودیت‌ها
       synchronize: process.env.NODE_ENV === 'development',
       logging: true,
       migrations: ['src/migrations/*.ts'],
     }),
-    TypeOrmModule.forFeature([User, Journal, List]),
-    UserModule,
-    JournalModule,
-    ListModule,
+    TypeOrmModule.forFeature([User, Journal, List]),  // استفاده از موجودیت‌ها
+    ProjectModule,  // وارد کردن ماژول پروژه
   ],
   providers: [],
 })
