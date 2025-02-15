@@ -20,40 +20,19 @@
             </form>
         </section>
 
-        <% if (journals && journals.length > 0) { %>
-        <section id="results-section">
+        <!-- نتایج جستجو -->
+        <section id="results-section" class="hidden">
             <h2>نتایج جستجو</h2>
-            <ul>
-                <% journals.forEach(journal => { %>
-                    <li>
-                        <strong>عنوان:</strong> <%= journal.title %><br>
-                        <strong>ISSN:</strong> <%= journal.issn %><br>
-                        <h3>وضعیت در لیست‌ها:</h3>
-                        <ul>
-                            <% 
-                                let relatedLists = lists ? lists.filter(list => list.journalId === journal.id) : [];
-                                if (relatedLists.length > 0) { 
-                            %>
-                                <% relatedLists.forEach(list => { %>
-                                    <li><%= list.name %> (<%= list.type %>)</li>
-                                <% }) %>
-                            <% } else { %>
-                                <li>هیچ لیستی برای این مجله وجود ندارد.</li>
-                            <% } %>
-                        </ul>
-                    </li>
-                <% }) %>
-            </ul>
+            <ul id="results-list"></ul>
         </section>
-        <% } else if (typeof error === 'undefined' && typeof journals !== 'undefined') { %>
-            <p>هیچ نتیجه‌ای یافت نشد.</p>
-        <% } %>
 
+        <!-- نمایش ارور در صورت نبودن نتایج -->
         <% if (typeof error !== 'undefined' && error) { %>
             <section id="error-section">
                 <p style="color: red;"><%= error %></p>
             </section>
-        <% } %>          
+        <% } %>
+
     </main>
     <footer>
         <p>&copy; 2025 ifactor.ir</p>
