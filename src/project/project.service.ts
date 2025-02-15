@@ -48,15 +48,13 @@ export class ProjectService {
       ],
       relations: ['lists'],
     });
-  
+
     if (!journals.length) {
       throw new NotFoundException('نتیجه‌ای برای جستجو یافت نشد');
     }
-  
+
     const lists = journals.flatMap(journal => journal.lists); // استخراج همه لیست‌ها از مجلات
-  
+
     return { journals, lists }; // حالا هم مجلات و هم لیست‌ها را باز می‌گردانیم
   }
-  
-  
 }
