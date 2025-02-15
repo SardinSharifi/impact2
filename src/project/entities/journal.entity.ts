@@ -1,4 +1,4 @@
-import { Entity, PrimaryGeneratedColumn, Column, ManyToMany, JoinTable } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, ManyToMany, JoinTable, CreateDateColumn } from 'typeorm';
 import { List } from './list.entity';
 
 @Entity()
@@ -18,10 +18,14 @@ export class Journal {
   @Column()
   country: string;
 
-  @ManyToMany(() => List, list => list.journals)
-  @JoinTable() 
-  lists: List[];
+  @CreateDateColumn()
+  created_at: Date; 
 
-  @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
-  created_at: Date;
+  @ManyToMany(() => List, (list) => list.journals)
+  @JoinTable({
+    name: 'journal_list',  // نام جدول واسط
+    joinColumn: { name: 'journal_id', referencedColumnName: 'id' },
+    inverseJoinColumn: { name: 'list_id', referencedColumnName: 'id' },
+  })
+  lists: List[];
 }

@@ -31,7 +31,7 @@
                         <h3>وضعیت در لیست‌ها:</h3>
                         <ul>
                             <% 
-                                let relatedLists = lists.filter(list => list.journalId === journal.id);
+                                let relatedLists = lists ? lists.filter(list => list.journalId === journal.id) : [];
                                 if (relatedLists.length > 0) { 
                             %>
                                 <% relatedLists.forEach(list => { %>
@@ -49,7 +49,7 @@
             <p>هیچ نتیجه‌ای یافت نشد.</p>
         <% } %>
 
-        <% if (error) { %>
+        <% if (typeof error !== 'undefined' && error) { %>
             <section id="error-section">
                 <p style="color: red;"><%= error %></p>
             </section>

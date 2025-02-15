@@ -10,7 +10,7 @@ export class AppController {
   @Render('home')
   async homePage() {
     console.log('Rendering homepage');
-    return { journals: [], lists: [], error: null }; // ارسال error null به عنوان مقدار پیش‌فرض
+    return { journals: [], lists: [], error: null };
   }
 
   @Get('hello')
@@ -21,17 +21,31 @@ export class AppController {
   @Post('/search')
   async searchJournal(@Body('query') query: string, @Res() res: Response) {
     try {
-      const result = await this.projectService.searchJournal(query);
-
-      if (!result.journals.length) {
-        return res.render('home', { error: 'هیچ مجله‌ای با این معیار پیدا نشد.' });
+      console.log('🔎 جستجوی انجام شده برای:', query); // بررسی مقدار query ورودی
+  
+      if (!query || query.trim() === '') {
+        return res.render('home', { journals: [], lists: [], error: 'لطفاً مقدار جستجو را وارد کنید.' });
       }
-
-      return res.render('home', { journals: result.journals, lists: result.lists });
+  
+      const result = await this.projectService.searchJournal(query.trim());
+  
+      console.log('📋 نتیجه جستجو:', result); // بررسی مقدار خروجی result
+  
+      if (!result.journals || result.journals.length === 0) {
+        return res.render('home', { journals: [], lists: [], error: 'هیچ مجله‌ای با این معیار پیدا نشد.' });
+      }
+  
+      return res.render('home', { 
+        journals: result.journals, 
+        lists: result.lists || [],  // اگر lists مقدار null یا undefined داشت، یک آرایه خالی بفرستیم
+        error: null 
+      });
+  
     } catch (error) {
-      console.error(error);
-      return res.render('home', { error: 'خطایی در پردازش درخواست پیش آمده است. لطفاً دوباره تلاش کنید.' });
+      console.error('❌ خطا در جستجو:', error);
+      return res.render('home', { journals: [], lists: [], error: 'خطایی در پردازش درخواست پیش آمده است. لطفاً دوباره تلاش کنید.' });
     }
   }
+  
 }
 

@@ -23,24 +23,23 @@ export class ProjectService {
       country,
       created_at: new Date(),
     });
-  
+
     await this.journalRepository.save(journal);
     return journal;
   }
-  
 
-  // دریافت مجله بر اساس ISSN و نمایش لیست‌ها
+  // دریافت مجله بر اساس ISSN و نمایش لیست‌های مرتبط
   async getJournalByIssn(issn: string) {
     const journal = await this.journalRepository.findOne({
       where: { issn },
-      relations: ['lists'], // بارگذاری لیست‌ها همراه با مجله
+      relations: ['lists'],
     });
 
     if (!journal) {
       throw new NotFoundException('مجله مورد نظر یافت نشد');
     }
 
-    return { journal, lists: journal.lists }; // برگرداندن لیست‌ها به عنوان بخش از جواب
+    return { journal, lists: journal.lists };
   }
 
   // جستجو برای مجلات بر اساس ISSN یا عنوان و نمایش لیست‌ها
@@ -57,13 +56,11 @@ export class ProjectService {
       throw new NotFoundException('نتیجه‌ای برای جستجو یافت نشد');
     }
 
-    // استخراج همه لیست‌ها از مجلات
-    const lists = journals.flatMap(journal => journal.lists); 
-
-    return { journals, lists }; // بازگشت همزمان مجلات و لیست‌ها
+    const lists = journals.flatMap(journal => journal.lists);
+    return { journals, lists };
   }
 
-  // ایجاد لیست‌های blacklist و index
+  // ایجاد لیست blacklist یا index
   async createList(name: string, type: 'blacklist' | 'index') {
     const list = this.listRepository.create({
       name,
@@ -74,9 +71,9 @@ export class ProjectService {
     return list;
   }
 
-  // ارتباط یک مجله با لیست‌ها
+  // ارتباط یک مجله با لیست blacklist یا index
   async addJournalToList(journalId: number, listId: number) {
-    const journal = await this.journalRepository.findOne({ where: { id: journalId } });
+    const journal = await this.journalRepository.findOne({ where: { id: journalId }, relations: ['lists'] });
     const list = await this.listRepository.findOne({ where: { id: listId } });
 
     if (!journal || !list) {
@@ -86,6 +83,28 @@ export class ProjectService {
     journal.lists = [...(journal.lists || []), list];
     await this.journalRepository.save(journal);
 
-    return { journal, list }; // برگرداندن مجله و لیست به روز شده
+    return { journal, list };
+  }
+
+  // **ایجاد داده اولیه در دیتابیس**
+  async seedDatabase() {
+    console.log('Seeding database...');
+
+    // **ایجاد لیست‌های نمونه**
+    const blacklist = await this.createList("Beall's List", "blacklist");
+    const index1 = await this.createList("Scopus", "index");
+    const index2 = await this.createList("ISI", "index");
+
+    // **ایجاد مجلات نمونه**
+    const journal1 = await this.createJournal("Nature", "1476-4687", "Springer", "United Kingdom");
+    const journal2 = await this.createJournal("Science", "0036-8075", "AAAS", "United States");
+    const journal3 = await this.createJournal("PLOS ONE", "1932-6203", "PLOS", "United States");
+
+    // **ارتباط مجلات با لیست‌ها**
+    await this.addJournalToList(journal1.id, index1.id); // Nature در Scopus
+    await this.addJournalToList(journal2.id, index2.id); // Science در ISI
+    await this.addJournalToList(journal3.id, blacklist.id); // PLOS ONE در لیست سیاه
+
+    console.log("✅ Database seeded successfully!");
   }
 }
