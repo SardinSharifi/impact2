@@ -5,10 +5,12 @@ import { ProjectModule } from './project/project.module';  // وارد کردن 
 import { User } from './project/entities/user.entity';  // اصلاح مسیر موجودیت‌ها
 import { Journal } from './project/entities/journal.entity';  // اصلاح مسیر موجودیت‌ها
 import { List } from './project/entities/list.entity';  // اصلاح مسیر موجودیت‌ها
+import { AppController } from './app.controller'; // وارد کردن AppController
+import { AppService } from './app.service'; // وارد کردن AppService
 
 @Module({
   imports: [
-    ConfigModule.forRoot(), 
+    ConfigModule.forRoot(),
     TypeOrmModule.forRoot({
       type: 'postgres',
       host: process.env.DB_HOST || 'localhost',
@@ -16,14 +18,15 @@ import { List } from './project/entities/list.entity';  // اصلاح مسیر �
       username: process.env.DB_USERNAME || 'postgres',
       password: process.env.DB_PASSWORD || '123456',
       database: process.env.DB_NAME || 'journaldb',
-      entities: [User, Journal, List], // وارد کردن موجودیت‌ها
+      entities: [User, Journal, List],
       synchronize: process.env.NODE_ENV === 'development',
       logging: true,
       migrations: ['src/migrations/*.ts'],
     }),
-    TypeOrmModule.forFeature([User, Journal, List]),  // استفاده از موجودیت‌ها
-    ProjectModule,  // وارد کردن ماژول پروژه
+    TypeOrmModule.forFeature([User, Journal, List]),
+    ProjectModule,  
   ],
-  providers: [],
+  controllers: [AppController], 
+  providers: [AppService], 
 })
 export class AppModule {}

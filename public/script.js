@@ -8,7 +8,7 @@ document.getElementById('search-form').addEventListener('submit', function(event
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ query: query }) // ارسال پارامتر query به سرور
+      body: JSON.stringify({ query: query })
     })
     .then(response => response.json())
     .then(data => {
