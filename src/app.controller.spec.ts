@@ -1,51 +1,36 @@
-import { Test, TestingModule } from '@nestjs/testing';
-import { AppController } from './app.controller';
-import { AppService } from './app.service';
+import { Controller, Get, Post, Render, Body, Res } from '@nestjs/common';
 import { ProjectService } from './project/project.service';
-import { INestApplication } from '@nestjs/common';
-import request from 'supertest';
+import { Response } from 'express';
 
+@Controller()
+export class AppController {
+  constructor(private readonly projectService: ProjectService) {}
 
-describe('AppController', () => {
-  let app: INestApplication;
+  @Get()
+  @Render('home')
+  async homePage() {
+    console.log('Rendering homepage');
+    return { journals: [], lists: [], error: null }; // ارسال error null به عنوان مقدار پیش‌فرض
+  }
 
-  beforeEach(async () => {
-    const moduleFixture: TestingModule = await Test.createTestingModule({
-      controllers: [AppController],
-      providers: [
-        AppService,
-        {
-          provide: ProjectService,
-          useValue: {
-            searchJournal: jest.fn().mockResolvedValue({ journals: [], lists: [] }),
-          },
-        },
-      ],
-    }).compile();
+  @Get('hello')
+  getHello(): string {
+    return 'Hello World!';
+  }
 
-    app = moduleFixture.createNestApplication();
-    await app.init();
-  });
+  @Post('/search')
+  async searchJournal(@Body('query') query: string, @Res() res: Response) {
+    try {
+      const result = await this.projectService.searchJournal(query);
 
-  afterEach(async () => {
-    await app.close();
-  });
+      if (!result.journals.length) {
+        return res.render('home', { error: 'هیچ مجله‌ای با این معیار پیدا نشد.' });
+      }
 
-  describe('root', () => {
-    it('should return "Hello World!"', () => {
-      const appController = app.get<AppController>(AppController);
-      expect(appController.getHello()).toBe('Hello World!');
-    });
-  });
-
-  describe('searchJournal', () => {
-    it('should return a response indicating no journals found', async () => {
-      const response = await request(app.getHttpServer())
-        .post('/search')
-        .send({ query: 'sample query' })
-        .expect(200);
-
-      expect(response.text).toContain('هیچ مجله‌ای با این معیار پیدا نشد.');
-    });
-  });
-});
+      return res.render('home', { journals: result.journals, lists: result.lists });
+    } catch (error) {
+      console.error(error);
+      return res.render('home', { error: 'خطایی در پردازش درخواست پیش آمده است. لطفاً دوباره تلاش کنید.' });
+    }
+  }
+}

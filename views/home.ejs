@@ -30,9 +30,9 @@
                         <strong>ISSN:</strong> <%= journal.issn %><br>
                         <h3>وضعیت در لیست‌ها:</h3>
                         <ul>
-                            <% if (journal.lists && journal.lists.length > 0) { %>
-                                <% journal.lists.forEach(list => { %>
-                                    <li><%= list.name %></li>
+                            <% if (lists && lists.length > 0) { %>
+                                <% lists.forEach(list => { %>
+                                    <li><%= list.name %> (<%= list.type %>)</li>
                                 <% }) %>
                             <% } else { %>
                                 <li>هیچ لیستی برای این مجله وجود ندارد.</li>
@@ -50,7 +50,7 @@
             <section id="error-section">
               <p style="color: red;"><%= error %></p>
             </section>
-          <% } %>          
+        <% } %>          
     </main>
     <footer>
         <p>&copy; 2025 ifactor.ir</p>
@@ -58,4 +58,3 @@
     <script src="/script.js"></script>
 </body>
 </html>
-

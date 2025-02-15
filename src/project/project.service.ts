@@ -14,18 +14,22 @@ export class ProjectService {
     private listRepository: Repository<List>,
   ) {}
 
-  // ایجاد یک مجله جدید
-  async createJournal() {
+  // ایجاد یک مجله جدید با استفاده از پارامترها
+  async createJournal(title: string, issn: string, publisher: string, country: string) {
     const journal = this.journalRepository.create({
-      title: 'عنوان مجله',
-      issn: '1234-5678',
+      title,
+      issn,
+      publisher,
+      country,
+      created_at: new Date(),
     });
-
+  
     await this.journalRepository.save(journal);
     return journal;
   }
+  
 
-  // دریافت مجله بر اساس ISSN
+  // دریافت مجله بر اساس ISSN و نمایش لیست‌ها
   async getJournalByIssn(issn: string) {
     const journal = await this.journalRepository.findOne({
       where: { issn },
@@ -39,7 +43,7 @@ export class ProjectService {
     return { journal, lists: journal.lists }; // برگرداندن لیست‌ها به عنوان بخش از جواب
   }
 
-  // جستجو برای مجلات بر اساس ISSN یا عنوان
+  // جستجو برای مجلات بر اساس ISSN یا عنوان و نمایش لیست‌ها
   async searchJournal(query: string) {
     const journals = await this.journalRepository.find({
       where: [
@@ -53,8 +57,35 @@ export class ProjectService {
       throw new NotFoundException('نتیجه‌ای برای جستجو یافت نشد');
     }
 
-    const lists = journals.flatMap(journal => journal.lists); // استخراج همه لیست‌ها از مجلات
+    // استخراج همه لیست‌ها از مجلات
+    const lists = journals.flatMap(journal => journal.lists); 
 
-    return { journals, lists }; // حالا هم مجلات و هم لیست‌ها را باز می‌گردانیم
+    return { journals, lists }; // بازگشت همزمان مجلات و لیست‌ها
+  }
+
+  // ایجاد لیست‌های blacklist و index
+  async createList(name: string, type: 'blacklist' | 'index') {
+    const list = this.listRepository.create({
+      name,
+      type,
+    });
+
+    await this.listRepository.save(list);
+    return list;
+  }
+
+  // ارتباط یک مجله با لیست‌ها
+  async addJournalToList(journalId: number, listId: number) {
+    const journal = await this.journalRepository.findOne({ where: { id: journalId } });
+    const list = await this.listRepository.findOne({ where: { id: listId } });
+
+    if (!journal || !list) {
+      throw new NotFoundException('مجله یا لیست یافت نشد');
+    }
+
+    journal.lists = [...(journal.lists || []), list];
+    await this.journalRepository.save(journal);
+
+    return { journal, list }; // برگرداندن مجله و لیست به روز شده
   }
 }
