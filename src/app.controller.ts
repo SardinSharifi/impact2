@@ -1,5 +1,6 @@
-import { Controller, Get, Post, Render, Body, HttpException, HttpStatus } from '@nestjs/common';
+import { Controller, Get, Post, Render, Body, Res } from '@nestjs/common';
 import { ProjectService } from './project/project.service';
+import { Response } from 'express';
 
 @Controller()
 export class AppController {
@@ -9,7 +10,7 @@ export class AppController {
   @Render('home')
   async homePage() {
     console.log('Rendering homepage');
-    return { journals: [], lists: [] };
+    return { journals: [], lists: [], error: null }; // ارسال error null به عنوان مقدار پیش‌فرض
   }
 
   @Get('hello')
@@ -18,21 +19,20 @@ export class AppController {
   }
 
   @Post('/search')
-  async searchJournal(@Body('query') query: string) {
+  async searchJournal(@Body('query') query: string, @Res() res: Response) {
     try {
       const result = await this.projectService.searchJournal(query);
-      
-      // اگر نتایج خالی بود، پیامی مبنی بر عدم پیدا شدن نتیجه ارسال کنیم
+  
       if (!result.journals.length) {
-        return { error: 'هیچ مجله‌ای با این معیار پیدا نشد.' };
+        return res.render('home', { error: 'هیچ مجله‌ای با این معیار پیدا نشد.' });
       }
-      
-      return { journals: result.journals, lists: result.lists };
+  
+      return res.render('home', { journals: result.journals, lists: result.lists });
     } catch (error) {
-      // پیامی برای خطاهای احتمالی از پروژه (مثلاً مشکلات دیتابیس)
-      console.error(error);  // لاگ کردن خطا برای بررسی دقیق‌تر
-      return { error: 'خطایی در پردازش درخواست پیش آمده است. لطفاً دوباره تلاش کنید.' };
+      console.error(error);
+      return res.render('home', { error: 'خطایی در پردازش درخواست پیش آمده است. لطفاً دوباره تلاش کنید.' });
     }
   }
   
+   
 }
