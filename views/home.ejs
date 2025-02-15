@@ -30,8 +30,11 @@
                         <strong>ISSN:</strong> <%= journal.issn %><br>
                         <h3>وضعیت در لیست‌ها:</h3>
                         <ul>
-                            <% if (lists && lists.length > 0) { %>
-                                <% lists.forEach(list => { %>
+                            <% 
+                                let relatedLists = lists.filter(list => list.journalId === journal.id);
+                                if (relatedLists.length > 0) { 
+                            %>
+                                <% relatedLists.forEach(list => { %>
                                     <li><%= list.name %> (<%= list.type %>)</li>
                                 <% }) %>
                             <% } else { %>
@@ -42,13 +45,13 @@
                 <% }) %>
             </ul>
         </section>
-        <% } else { %>
-        <p>هیچ نتیجه‌ای یافت نشد.</p>
+        <% } else if (typeof error === 'undefined' && typeof journals !== 'undefined') { %>
+            <p>هیچ نتیجه‌ای یافت نشد.</p>
         <% } %>
 
         <% if (error) { %>
             <section id="error-section">
-              <p style="color: red;"><%= error %></p>
+                <p style="color: red;"><%= error %></p>
             </section>
         <% } %>          
     </main>
