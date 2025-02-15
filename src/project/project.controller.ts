@@ -7,10 +7,14 @@ export class ProjectController {
 
   @Get(':issn')
   async getJournalByIssn(@Param('issn') issn: string) {
-    const journal = await this.projectService.getJournalByIssn(issn);
-    if (!journal) {
-      throw new Error('مجله با این ISSN یافت نشد.');
+    try {
+      const journal = await this.projectService.getJournalByIssn(issn);
+      if (!journal) {
+        throw new Error('مجله با این ISSN یافت نشد.');
+      }
+      return journal;
+    } catch (error) {
+      throw new Error('خطا در دریافت مجله');
     }
-    return journal;
   }
 }
