@@ -13,47 +13,22 @@
     <main>
         <section class="search-section">
             <h2>جستجوی مجله</h2>
-            <form id="search-form" action="/search" method="POST">
+            <form id="search-form">
                 <label for="search-input">عنوان مجله یا ISSN:</label>
                 <input type="text" id="search-input" name="query" required placeholder="عنوان یا ISSN را وارد کنید...">
                 <button type="submit">جستجو</button>
             </form>
         </section>
 
-        <% if (journals && journals.length > 0) { %>
-        <section id="results-section">
+        <div id="error-section" style="color: red; display: none;"></div>
+        <div id="results-section" style="display: none;">
             <h2>نتایج جستجو</h2>
-            <ul>
-                <% journals.forEach(journal => { %>
-                    <li>
-                        <strong>عنوان:</strong> <%= journal.title %><br>
-                        <strong>ISSN:</strong> <%= journal.issn %><br>
-                        <h3>وضعیت در لیست‌ها:</h3>
-                        <ul>
-                            <% 
-                                let relatedLists = lists ? lists.filter(list => list.journalId === journal.id) : [];
-                                if (relatedLists.length > 0) { 
-                            %>
-                                <% relatedLists.forEach(list => { %>
-                                    <li><%= list.name %> (<%= list.type %>)</li>
-                                <% }) %>
-                            <% } else { %>
-                                <li>هیچ لیستی برای این مجله وجود ندارد.</li>
-                            <% } %>
-                        </ul>
-                    </li>
-                <% }) %>
-            </ul>
-        </section>
-        <% } else if (typeof error === 'undefined' && typeof journals !== 'undefined') { %>
-            <p>هیچ نتیجه‌ای یافت نشد.</p>
-        <% } %>
-
-        <% if (typeof error !== 'undefined' && error) { %>
-            <section id="error-section">
-                <p style="color: red;"><%= error %></p>
-            </section>
-        <% } %>          
+            <ul id="results-list"></ul>
+            <div id="lists-section" style="display: none;">
+                <h3>وضعیت در لیست‌ها:</h3>
+                <ul id="lists-list"></ul>
+            </div>
+        </div>
     </main>
     <footer>
         <p>&copy; 2025 ifactor.ir</p>

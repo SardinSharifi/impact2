@@ -3,49 +3,53 @@ document.getElementById('search-form').addEventListener('submit', function(event
   const query = document.getElementById('search-input').value.trim();
   if (!query) return;
 
-  console.log('در حال ارسال درخواست برای جستجو:', query);  // نمایش مقدار query در کنسول
-
-  fetch('/projects/search', {  
+  fetch('/projects/search', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
     },
     body: JSON.stringify({ query: query })
   })
-  .then(response => {
-    if (!response.ok) {
-      console.log('خطا در دریافت پاسخ:', response.statusText);  // نمایش خطا در صورت بروز مشکل
-      throw new Error('خطا در دریافت اطلاعات');
-    }
-    return response.json();
-  })
+  .then(response => response.json())
   .then(data => {
-    console.log('نتیجه دریافت شده:', data);  // نمایش داده‌های دریافتی از سرور
     const resultsSection = document.getElementById('results-section');
     const resultsList = document.getElementById('results-list');
-    if (resultsList) {
+    const errorSection = document.getElementById('error-section');
+
+    if (data.error) {
+      errorSection.textContent = data.error;
+      errorSection.style.display = 'block';
+      resultsSection.style.display = 'none';
+    } else {
       resultsList.innerHTML = '';
-      if (data.journals && data.journals.length > 0) {
+      if (data.journals.length > 0) {
         data.journals.forEach(journal => {
           const listItem = document.createElement('li');
-          const link = document.createElement('a');
-          link.href = `/journal/${journal.id}`;
-          link.textContent = `${journal.title} (ISSN: ${journal.issn})`;
-          listItem.appendChild(link);
+          listItem.textContent = `${journal.title} (ISSN: ${journal.issn})`;
           resultsList.appendChild(listItem);
         });
-        resultsSection.classList.remove('hidden');
       } else {
         resultsList.innerHTML = '<li>هیچ نتیجه‌ای یافت نشد.</li>';
-        resultsSection.classList.remove('hidden');
       }
+
+      if (data.lists.length > 0) {
+        const listsSection = document.getElementById('lists-section');
+        const listsList = document.getElementById('lists-list');
+        listsList.innerHTML = '';
+        data.lists.forEach(list => {
+          const listItem = document.createElement('li');
+          listItem.textContent = `${list.name} (${list.type})`;
+          listsList.appendChild(listItem);
+        });
+        listsSection.style.display = 'block';
+      } else {
+        listsSection.style.display = 'none';
+      }
+
+      resultsSection.style.display = 'block';
     }
   })
   .catch(error => {
-    console.error('خطا در پردازش درخواست:', error);  // نمایش خطا در کنسول
-    const resultsSection = document.getElementById('results-section');
-    const resultsList = document.getElementById('results-list');
-    resultsList.innerHTML = `<li>${error.message}</li>`;
-    resultsSection.classList.remove('hidden');
+    console.error('خطا در پردازش درخواست:', error);
   });
 });
