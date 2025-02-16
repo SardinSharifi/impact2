@@ -8,7 +8,7 @@ export class ProjectController {
   @Post('/search')
   async searchJournal(@Body('query') query: string) {
     try {
-        console.log('🔎 جستجو برای:', query);  // چاپ مقدار query
+        console.log(' جستجو برای:', query);  // چاپ مقدار query
 
         const result = await this.projectService.searchJournal(query.trim());
         console.log('📋 نتیجه جستجو:', result);  // چاپ نتیجه کامل
