@@ -12,7 +12,7 @@ export class AppController {
     return { journals: [], lists: [], error: null };
   }
 
-  @Post('/search')
+  @Post('/projects/search')
   async searchJournal(@Body('query') query: string, @Res() res: Response) {
     try {
       console.log(' جستجوی انجام شده برای:', query);
