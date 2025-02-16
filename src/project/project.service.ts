@@ -45,20 +45,21 @@ export class ProjectService {
   // جستجو برای مجلات بر اساس ISSN یا عنوان و نمایش لیست‌ها
   async searchJournal(query: string) {
     const journals = await this.journalRepository.find({
-      where: [
-        { issn: Like(`%${query}%`) },
-        { title: Like(`%${query}%`) },
-      ],
-      relations: ['lists'],
+        where: [
+            { issn: Like(`%${query}%`) },
+            { title: Like(`%${query}%`) },
+        ],
+        relations: ['lists'],
     });
 
-    if (!journals.length) {
-      throw new NotFoundException('نتیجه‌ای برای جستجو یافت نشد');
-    }
+    console.log('📋 مجلات یافته شده:', journals);  // چاپ مجلات پیدا شده
 
     const lists = journals.flatMap(journal => journal.lists);
+    console.log('📋 لیست‌ها:', lists);  // چاپ لیست‌ها
+
     return { journals, lists };
-  }
+}
+
 
   // ایجاد لیست blacklist یا index
   async createList(name: string, type: 'blacklist' | 'index') {
