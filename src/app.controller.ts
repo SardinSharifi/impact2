@@ -21,31 +21,30 @@ export class AppController {
   @Post('/search')
   async searchJournal(@Body('query') query: string, @Res() res: Response) {
     try {
-      console.log('🔎 جستجوی انجام شده برای:', query); // بررسی مقدار query ورودی
+      console.log('🔎 جستجوی انجام شده برای:', query); 
   
       if (!query || query.trim() === '') {
-        return res.render('home', { journals: [], lists: [], error: 'لطفاً مقدار جستجو را وارد کنید.' });
+        return res.json({ journals: [], lists: [], error: 'لطفاً مقدار جستجو را وارد کنید.' });
       }
   
       const result = await this.projectService.searchJournal(query.trim());
   
-      console.log('📋 نتیجه جستجو:', result); // بررسی مقدار خروجی result
+      console.log('📋 نتیجه جستجو:', result);
   
       if (!result.journals || result.journals.length === 0) {
-        return res.render('home', { journals: [], lists: [], error: 'هیچ مجله‌ای با این معیار پیدا نشد.' });
+        return res.json({ journals: [], lists: [], error: 'هیچ مجله‌ای با این معیار پیدا نشد.' });
       }
   
-      return res.render('home', { 
+      return res.json({ 
         journals: result.journals, 
-        lists: result.lists || [],  // اگر lists مقدار null یا undefined داشت، یک آرایه خالی بفرستیم
+        lists: result.lists || [], 
         error: null 
       });
   
     } catch (error) {
       console.error('❌ خطا در جستجو:', error);
-      return res.render('home', { journals: [], lists: [], error: 'خطایی در پردازش درخواست پیش آمده است. لطفاً دوباره تلاش کنید.' });
+      return res.json({ journals: [], lists: [], error: 'خطایی در پردازش درخواست پیش آمده است. لطفاً دوباره تلاش کنید.' });
     }
-  }
-  
+  } 
 }
 

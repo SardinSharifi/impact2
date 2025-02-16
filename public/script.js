@@ -3,15 +3,24 @@ document.getElementById('search-form').addEventListener('submit', function(event
   const query = document.getElementById('search-input').value.trim();
   if (!query) return;
 
-  fetch('/search', {  
+  console.log('در حال ارسال درخواست برای جستجو:', query);  // نمایش مقدار query در کنسول
+
+  fetch('/projects/search', {  
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
     },
     body: JSON.stringify({ query: query })
   })
-  .then(response => response.json()) // این باید داخل fetch باشد
+  .then(response => {
+    if (!response.ok) {
+      console.log('خطا در دریافت پاسخ:', response.statusText);  // نمایش خطا در صورت بروز مشکل
+      throw new Error('خطا در دریافت اطلاعات');
+    }
+    return response.json();
+  })
   .then(data => {
+    console.log('نتیجه دریافت شده:', data);  // نمایش داده‌های دریافتی از سرور
     const resultsSection = document.getElementById('results-section');
     const resultsList = document.getElementById('results-list');
     if (resultsList) {
@@ -33,6 +42,10 @@ document.getElementById('search-form').addEventListener('submit', function(event
     }
   })
   .catch(error => {
-    console.error('خطا در دریافت اطلاعات:', error);
+    console.error('خطا در پردازش درخواست:', error);  // نمایش خطا در کنسول
+    const resultsSection = document.getElementById('results-section');
+    const resultsList = document.getElementById('results-list');
+    resultsList.innerHTML = `<li>${error.message}</li>`;
+    resultsSection.classList.remove('hidden');
   });
 });
