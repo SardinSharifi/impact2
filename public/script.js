@@ -13,6 +13,7 @@ document.getElementById('search-form').addEventListener('submit', function(event
   
   .then(response => response.json()) // این باید داخل fetch باشد
   .then(data => {
+    console.log(data);
     const resultsSection = document.getElementById('results-section');
     const resultsList = document.getElementById('results-list');
     if (resultsList) {
