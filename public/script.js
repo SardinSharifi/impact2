@@ -12,6 +12,7 @@ document.getElementById('search-form').addEventListener('submit', function(event
   })
   .then(response => response.json())
   .then(data => {
+    console.log(data);
     const resultsSection = document.getElementById('results-section');
     const resultsList = document.getElementById('results-list');
     const errorSection = document.getElementById('error-section');

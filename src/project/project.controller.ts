@@ -8,33 +8,40 @@ export class ProjectController {
   @Post('/search')
   async searchJournal(@Body('query') query: string) {
     try {
-        console.log(' جستجو برای:', query);  // چاپ مقدار query
-
+        // جستجو برای query
         const result = await this.projectService.searchJournal(query.trim());
-        console.log('📋 نتیجه جستجو:', result);  // چاپ نتیجه کامل
-
+        
+        // نتیجه جستجو
         return { 
             journals: result.journals || [], 
             lists: result.lists || [], 
-            error: result.journals.length > 0 ? null : 'هیچ مجله‌ای پیدا نشد.'
+            error: result.journals.length > 0 ? null : 'هیچ مجله‌ای با این مشخصات پیدا نشد.'  // پیام خطای دقیق‌تر
         };
     } catch (error) {
-        console.error('❌ خطا در جستجو:', error);
-        return { journals: [], lists: [], error: 'خطایی در پردازش درخواست پیش آمده است.' };
+        // در صورت بروز خطا
+        return { 
+            journals: [], 
+            lists: [], 
+            error: 'خطایی در پردازش درخواست پیش آمده است. لطفاً دوباره تلاش کنید.'  // پیام خطای عمومی‌تر
+        };
     }
+  }
 
-}
   @Get(':issn')
   async getJournalByIssn(@Param('issn') issn: string) {
     try {
+      // جستجو برای مجله با ISSN مشخص
       const journal = await this.projectService.getJournalByIssn(issn);
+      
+      // بررسی وجود مجله
       if (!journal) {
-        return { error: 'مجله با این ISSN یافت نشد.' };
+        return { error: 'مجله‌ای با این ISSN پیدا نشد.' };
       }
+      
       return { journal };
     } catch (error) {
-      console.error('خطا در دریافت مجله:', error);
-      return { error: 'خطا در دریافت مجله' };
+      // در صورت بروز خطا
+      return { error: 'خطا در دریافت مجله. لطفاً دوباره تلاش کنید.' };
     }
   }
 }
