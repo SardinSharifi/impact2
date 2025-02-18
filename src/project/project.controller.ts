@@ -1,47 +1,65 @@
-import { Controller, Post, Get, Body, Param } from '@nestjs/common';
+import { Controller, Get, Param, Post, Body } from '@nestjs/common';
 import { ProjectService } from './project.service';
 
-@Controller('projects')  // مسیر پایه را تنظیم می‌کند
+@Controller('projects')
 export class ProjectController {
   constructor(private readonly projectService: ProjectService) {}
 
-  @Post('/search')
+  // جستجو برای مجلات بر اساس ISSN یا عنوان
+  @Post('search')
   async searchJournal(@Body('query') query: string) {
     try {
-        // جستجو برای query
-        const result = await this.projectService.searchJournal(query.trim());
-        
-        // نتیجه جستجو
-        return { 
-            journals: result.journals || [], 
-            lists: result.lists || [], 
-            error: result.journals.length > 0 ? null : 'هیچ مجله‌ای با این مشخصات پیدا نشد.'  // پیام خطای دقیق‌تر
-        };
+      const { journals, lists } = await this.projectService.searchJournal(query);
+      return { journals, lists };
     } catch (error) {
-        // در صورت بروز خطا
-        return { 
-            journals: [], 
-            lists: [], 
-            error: 'خطایی در پردازش درخواست پیش آمده است. لطفاً دوباره تلاش کنید.'  // پیام خطای عمومی‌تر
-        };
+      return { error: 'خطا در جستجو. لطفاً دوباره تلاش کنید.' };
     }
   }
 
+  // دریافت مجله بر اساس ISSN
   @Get(':issn')
   async getJournalByIssn(@Param('issn') issn: string) {
     try {
-      // جستجو برای مجله با ISSN مشخص
       const journal = await this.projectService.getJournalByIssn(issn);
-      
-      // بررسی وجود مجله
-      if (!journal) {
-        return { error: 'مجله‌ای با این ISSN پیدا نشد.' };
-      }
-      
       return { journal };
     } catch (error) {
-      // در صورت بروز خطا
       return { error: 'خطا در دریافت مجله. لطفاً دوباره تلاش کنید.' };
     }
+  }
+
+  // افزودن مجله جدید
+  @Post('add-journal')
+  async addJournal(@Body() journalData: { title: string; issn: string; publisher: string; country: string }) {
+    return await this.projectService.addJournal(journalData);
+  }
+
+  // افزودن لیست جدید
+  @Post('add-list')
+  async addList(@Body() listData: { name: string; type: 'blacklist' | 'index' }) {  // Updated type here
+    return await this.projectService.addList(listData);
+  }
+
+  // افزودن مجله به لیست
+  @Post('add-journal-to-list')
+  async addJournalToList(@Body() { journalId, listId }: { journalId: number; listId: number }) {
+    return await this.projectService.addJournalToList(journalId, listId);
+  }
+
+  // حذف مجله از لیست
+  @Post('remove-journal-from-list')
+  async removeJournalFromList(@Body() { journalId, listId }: { journalId: number; listId: number }) {
+    return await this.projectService.removeJournalFromList(journalId, listId);
+  }
+
+  // ویرایش مجله
+  @Post('edit-journal')
+  async editJournal(@Body() { journalId, updatedData }: { journalId: number, updatedData: any }) {
+    return await this.projectService.editJournal(journalId, updatedData);
+  }
+
+  // بارگذاری داده‌های اولیه به دیتابیس
+  @Post('seed')
+  async seedDatabase() {
+    return await this.projectService.seedDatabase();
   }
 }

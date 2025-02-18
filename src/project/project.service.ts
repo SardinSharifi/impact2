@@ -50,6 +50,22 @@ export class ProjectService {
     }
   }
 
+  // افزودن مجله جدید
+  async addJournal(journalData: { title: string; issn: string; publisher: string; country: string }) {
+    const journal = this.journalRepository.create(journalData);
+    return this.journalRepository.save(journal);
+  }
+
+  // افزودن لیست جدید
+  async addList(listData: { name: string; type: 'blacklist' | 'index' }) {
+    try {
+      const list = this.listRepository.create(listData);
+      return await this.listRepository.save(list);
+    } catch (error) {
+      throw new Error('خطا در ایجاد لیست: ' + error.message);
+    }
+  }
+
   // جستجو برای مجلات بر اساس ISSN یا عنوان و نمایش لیست‌ها
   async searchJournal(query: string) {
     try {
@@ -61,10 +77,10 @@ export class ProjectService {
         relations: ['lists'],
       });
 
-      console.log('📋 مجلات یافته شده:', journals);  // چاپ مجلات پیدا شده
+      console.log('📋 مجلات یافته شده:', journals);
 
       const lists = journals.flatMap(journal => journal.lists);
-      console.log('📋 لیست‌ها:', lists);  // چاپ لیست‌ها
+      console.log('📋 لیست‌ها:', lists);
 
       return { journals, lists };
     } catch (error) {
@@ -75,11 +91,7 @@ export class ProjectService {
   // ایجاد لیست blacklist یا index
   async createList(name: string, type: 'blacklist' | 'index') {
     try {
-      const list = this.listRepository.create({
-        name,
-        type,
-      });
-
+      const list = this.listRepository.create({ name, type });
       await this.listRepository.save(list);
       return list;
     } catch (error) {
@@ -106,15 +118,51 @@ export class ProjectService {
     }
   }
 
+  // حذف مجله از لیست
+  async removeJournalFromList(journalId: number, listId: number) {
+    try {
+      const journal = await this.journalRepository.findOne({ where: { id: journalId }, relations: ['lists'] });
+      const list = await this.listRepository.findOne({ where: { id: listId } });
+
+      if (!journal || !list) {
+        throw new NotFoundException('مجله یا لیست یافت نشد');
+      }
+
+      journal.lists = journal.lists.filter(l => l.id !== listId);
+      await this.journalRepository.save(journal);
+
+      return { journal, list };
+    } catch (error) {
+      throw new Error('خطا در حذف مجله از لیست: ' + error.message);
+    }
+  }
+
+  // ویرایش مجله
+  async editJournal(journalId: number, updateData: Partial<Journal>) {
+    try {
+      const journal = await this.journalRepository.findOne({ where: { id: journalId } });
+  
+      if (!journal) {
+        throw new NotFoundException('مجله یافت نشد');
+      }
+  
+      Object.assign(journal, updateData);
+      await this.journalRepository.save(journal);
+      return journal;
+    } catch (error) {
+      throw new Error('خطا در ویرایش مجله: ' + error.message);
+    }
+  }
+
   // **ایجاد داده اولیه در دیتابیس**
   async seedDatabase() {
     try {
       console.log('Seeding database...');
 
       // **ایجاد لیست‌های نمونه**
-      const blacklist = await this.createList("Beall's List", "blacklist");
-      const index1 = await this.createList("Scopus", "index");
-      const index2 = await this.createList("ISI", "index");
+      const blacklist = await this.createList("Beall's List", 'blacklist');
+      const index1 = await this.createList("Scopus", 'index');
+      const index2 = await this.createList("ISI", 'index');
 
       // **ایجاد مجلات نمونه**
       const journal1 = await this.createJournal("Nature", "1476-4687", "Springer", "United Kingdom");
