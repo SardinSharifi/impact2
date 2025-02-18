@@ -14,7 +14,6 @@ export class ProjectService {
     private listRepository: Repository<List>,
   ) {}
 
-  // ایجاد یک مجله جدید با استفاده از پارامترها
   async createJournal(title: string, issn: string, publisher: string, country: string) {
     try {
       const journal = this.journalRepository.create({
@@ -32,12 +31,12 @@ export class ProjectService {
     }
   }
 
-  // دریافت مجله بر اساس ISSN و نمایش لیست‌های مرتبط
   async getJournalByIssn(issn: string) {
     try {
       const journal = await this.journalRepository.findOne({
         where: { issn },
         relations: ['lists'],
+        select: ['id', 'title', 'issn', 'publisher', 'country'],
       });
 
       if (!journal) {
@@ -50,13 +49,11 @@ export class ProjectService {
     }
   }
 
-  // افزودن مجله جدید
   async addJournal(journalData: { title: string; issn: string; publisher: string; country: string }) {
     const journal = this.journalRepository.create(journalData);
     return this.journalRepository.save(journal);
   }
 
-  // افزودن لیست جدید
   async addList(listData: { name: string; type: 'blacklist' | 'index' }) {
     try {
       const list = this.listRepository.create(listData);
@@ -66,7 +63,6 @@ export class ProjectService {
     }
   }
 
-  // جستجو برای مجلات بر اساس ISSN یا عنوان و نمایش لیست‌ها
   async searchJournal(query: string) {
     try {
       const journals = await this.journalRepository.find({
@@ -77,18 +73,13 @@ export class ProjectService {
         relations: ['lists'],
       });
 
-      console.log('📋 مجلات یافته شده:', journals);
-
       const lists = journals.flatMap(journal => journal.lists);
-      console.log('📋 لیست‌ها:', lists);
-
       return { journals, lists };
     } catch (error) {
       throw new Error('خطا در جستجوی مجله: ' + error.message);
     }
   }
 
-  // ایجاد لیست blacklist یا index
   async createList(name: string, type: 'blacklist' | 'index') {
     try {
       const list = this.listRepository.create({ name, type });
@@ -99,7 +90,6 @@ export class ProjectService {
     }
   }
 
-  // ارتباط یک مجله با لیست blacklist یا index
   async addJournalToList(journalId: number, listId: number) {
     try {
       const journal = await this.journalRepository.findOne({ where: { id: journalId }, relations: ['lists'] });
@@ -118,7 +108,6 @@ export class ProjectService {
     }
   }
 
-  // حذف مجله از لیست
   async removeJournalFromList(journalId: number, listId: number) {
     try {
       const journal = await this.journalRepository.findOne({ where: { id: journalId }, relations: ['lists'] });
@@ -137,15 +126,14 @@ export class ProjectService {
     }
   }
 
-  // ویرایش مجله
   async editJournal(journalId: number, updateData: Partial<Journal>) {
     try {
       const journal = await this.journalRepository.findOne({ where: { id: journalId } });
-  
+
       if (!journal) {
         throw new NotFoundException('مجله یافت نشد');
       }
-  
+
       Object.assign(journal, updateData);
       await this.journalRepository.save(journal);
       return journal;
@@ -154,25 +142,19 @@ export class ProjectService {
     }
   }
 
-  // **ایجاد داده اولیه در دیتابیس**
   async seedDatabase() {
     try {
-      console.log('Seeding database...');
-
-      // **ایجاد لیست‌های نمونه**
       const blacklist = await this.createList("Beall's List", 'blacklist');
       const index1 = await this.createList("Scopus", 'index');
       const index2 = await this.createList("ISI", 'index');
 
-      // **ایجاد مجلات نمونه**
       const journal1 = await this.createJournal("Nature", "1476-4687", "Springer", "United Kingdom");
       const journal2 = await this.createJournal("Science", "0036-8075", "AAAS", "United States");
       const journal3 = await this.createJournal("PLOS ONE", "1932-6203", "PLOS", "United States");
 
-      // **ارتباط مجلات با لیست‌ها**
-      await this.addJournalToList(journal1.id, index1.id); // Nature در Scopus
-      await this.addJournalToList(journal2.id, index2.id); // Science در ISI
-      await this.addJournalToList(journal3.id, blacklist.id); // PLOS ONE در لیست سیاه
+      await this.addJournalToList(journal1.id, index1.id);
+      await this.addJournalToList(journal2.id, index2.id);
+      await this.addJournalToList(journal3.id, blacklist.id);
 
       console.log("✅ Database seeded successfully!");
     } catch (error) {

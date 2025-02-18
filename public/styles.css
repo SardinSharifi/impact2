@@ -1,9 +1,8 @@
-
 body {
-    font-family: 'Arial', sans-serif;
+    font-family: 'َArial', sans-serif;
     direction: rtl;
     text-align: right;
-    background: linear-gradient(to right, #D7B899, #A67B5B); /* نسکافه‌ای شیری و موکا روشن */
+    background: linear-gradient(to right,rgb(225, 216, 207), #A67B5B); /* نسکافه‌ای شیری و موکا روشن */
     margin: 0;
     padding: 0;
 }
@@ -29,19 +28,20 @@ main {
     flex-direction: column;
     align-items: center;
 }
+
 .search-section {
     background: rgba(255, 255, 255, 0.9);
     padding: 2em 3em;
     border-radius: 10px;
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
     width: 100%;
-    max-width: 500px;
+    max-width: 400px; /* کوچک‌تر کردن سایز جعبه جستجو */
     text-align: center;
     background-color: rgba(215, 184, 153, 0.85); /* نسکافه‌ای شیری */
 }
 
 .search-section h2 {
-    font-size: em;
+    font-size: 1.8em;
     color: #4A2C22;
     margin-bottom: 1em;
 }
@@ -55,10 +55,10 @@ label {
 
 input[type="text"] {
     width: 100%;
-    padding: 1em;
+    padding: 0.8em; /* کوچکتر کردن padding */
     font-size: 1.1em;
     border-radius: 8px;
-    border: 1px solid #8D6E63;
+    border: 2px solid #8D6E63; /* پررنگ‌تر کردن حاشیه */
     margin-bottom: 1em;
     box-sizing: border-box;
     transition: all 0.3s ease;
@@ -66,7 +66,7 @@ input[type="text"] {
 
 input[type="text"]:focus {
     outline: none;
-    border: 1px solid #6D4C41;
+    border: 2px solid #6D4C41; /* تغییر رنگ حاشیه در حالت فوکوس */
     box-shadow: 0 0 8px rgba(109, 76, 65, 0.6);
 }
 
@@ -82,32 +82,41 @@ button {
 }
 
 button:hover {
-    background-color: #5E3B2E; /* موکا تیره‌تر */
+    background-color:rgb(85, 67, 45); /* موکا تیره‌تر */
 }
 
 .results-section {
     margin-top: 3em;
     width: 100%;
-    max-width: 500px;
+    max-width: 1000px; /* تنظیم حداکثر عرض */
     text-align: center;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-around; /* برای قرار دادن آیتم‌ها به‌صورت افقی */
 }
 
 #results-list {
     list-style: none;
     padding: 0;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-evenly;
 }
 
 #results-list li {
-    margin: 1em 0;
+    margin: 1em;
     padding: 1em;
     background-color: rgba(107, 67, 44, 0.1); /* موکا تیره شفاف */
     border-radius: 8px;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    width: calc(33% - 2em); /* تنظیم عرض آیتم‌ها به صورت افقی و جلوگیری از بهم ریختگی */
+    text-align: center;
+    box-sizing: border-box;
 }
 
 #results-list li a {
     text-decoration: none;
-    color: #6D4C41;
+    color:rgb(0, 0, 0);
     font-size: 1.1em;
 }
 
@@ -115,16 +124,27 @@ button:hover {
     text-decoration: underline;
 }
 
-.hidden {
-    display: none;
+#lists-list {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-evenly;
 }
 
+#lists-list li {
+    margin: 0.5em;
+    padding: 0.5em;
+    background-color: rgba(107, 67, 44, 0.1); /* موکا تیره شفاف */
+    border-radius: 8px;
+    width: calc(50% - 1em); /* عرض دوگانه برای لیست‌ها */
+    box-sizing: border-box;
+    text-align: center;
+}
 
 footer {
-    background-color: rgba(107, 67, 44, 0.8); 
+    background-color: rgba(67, 51, 42, 0.8);
     color: white;
     text-align: center;
-    padding: 0.01em;
+    padding: 0.5em;
     position: fixed;
     bottom: 0;
     width: 100%;
