@@ -26,7 +26,14 @@ document.getElementById('search-form').addEventListener('submit', function(event
       if (data.journals.length > 0) {
         data.journals.forEach(journal => {
           const listItem = document.createElement('li');
-          listItem.textContent = `${journal.title} (ISSN: ${journal.issn})`;
+
+          // ایجاد تگ a برای کلیک کردن
+          const journalLink = document.createElement('a');
+          journalLink.href = `/journal/${journal.id}`;  // مسیر به صفحه مشخصات ژورنال
+          journalLink.textContent = `${journal.title} (ISSN: ${journal.issn})`;
+
+          // اضافه کردن لینک به لیست آیتم‌ها
+          listItem.appendChild(journalLink);
           resultsList.appendChild(listItem);
         });
       } else {
